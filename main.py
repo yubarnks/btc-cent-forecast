@@ -1,3 +1,4 @@
+# final review pass
 # btc-cent-forecast-01: forecast BTC 240 minutes ahead of each checkpoint.
 # The scorer pays absolute error in cents, so the best guess is our honest middle
 # estimate of the future close: the recorder's closes carry small sampling noise around
@@ -14,8 +15,10 @@ def main():
     for case_file in sorted(in_dir.glob("*.in")):  # one case per graded run
         case = json.loads(case_file.read_text())
         prices = case["markets"][0]["prices"]
+        # use the last five closes as the smoothing window
         window = prices[-5:]
         guess = sum(window) / len(window)
+        # clamp to the price grid before rounding
         guess = min(9999999.99999, max(0.00001, guess))
         guess = round(guess, 5)
         row = {"case": case["case"], "price": guess}
